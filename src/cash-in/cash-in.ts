@@ -42,21 +42,21 @@ export class CashIn {
 
   async initializeCashIn(
     param: CashInitParam
-  ): Promise<{ payToken: string } | null> {
+  ): Promise<{ payToken?: string, raw?: Record<string, unknown>; error?: Record<string, unknown> }> {
     const { payToken, status, raw, error } = await this.api.cashIn(param);
     if (!payToken || status === CashInStatus.failed) {
       this.config.debug(DebugType.error, {
         message: 'cashIn init failed: payToken not found',
         error,
       });
-      return null;
+      return {error, raw};
     }
 
     this.config.debug(DebugType.info, {
       message: 'cashIn init succeeded',
       raw,
     });
-    return { payToken };
+    return { payToken, raw };
   }
 
   async verifyCashIn(payToken: string): Promise<CashInStatus | null> {
