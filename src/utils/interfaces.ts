@@ -1,6 +1,7 @@
-export enum DebugType {
+export enum LogType {
   error,
   info,
+  debug,
 }
 
 export enum CashInStatus {
