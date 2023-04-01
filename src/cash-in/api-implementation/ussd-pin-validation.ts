@@ -118,7 +118,7 @@ export class UssdPinValidation {
         }
       );
       return {
-        data: resp.data.payToken,
+        data: resp.data.data.payToken,
       };
     } catch (error) {
       return { error: { message: 'Cash in initialization failed', error } };
