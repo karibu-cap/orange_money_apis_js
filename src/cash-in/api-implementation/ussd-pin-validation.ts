@@ -85,8 +85,7 @@ export class UssdPinValidation {
     this.config.log(LogType.debug, {message:"Generating access token", data:{header, body}});
 
     try {
-      // const resp = await axios.post('https://api-s1.orange.cm/token', body, {
-      const resp = await axios.post('https://api.orange.com/oauth/v3/token', body, {
+      const resp = await axios.post('https://api-s1.orange.cm/token', body, {
         headers: header,
       });
       return { data: resp.data as Token };
@@ -109,6 +108,8 @@ export class UssdPinValidation {
     };
 
     try {
+      this.config.log(LogType.debug, {message:"Initializing payment(generating pay token)", data:{header}});
+
       const resp: CashInInitializationResponse = await axios.post(
         'https://api-s1.orange.cm/omcoreapis/1.0.2/mp/init',
         null,
@@ -173,6 +174,7 @@ export class UssdPinValidation {
       payToken: cashInInitializationData,
       pin: this.config.pin,
     };
+    this.config.log(LogType.debug, {message:"Requesting payment", data:{header, body}});
     try {
       const resp: typeof cashInRespData = await axios.post(
         'https://api-s1.orange.cm/omcoreapis/1.0.2/mp/pay',
