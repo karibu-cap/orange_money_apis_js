@@ -1,5 +1,5 @@
 import { classValidator as validator } from '../deps/deps';
-import { CashInStatus, DebugType } from '../utils/interfaces';
+import { CashInStatus, LogType } from '../utils/interfaces';
 import { UssdPinValidation } from './api-implementation/ussd-pin-validation';
 
 export enum ApiType {
@@ -17,7 +17,7 @@ export class CashInParameter {
   merchantNumber: string;
   xAuthToken: string;
   customerSecret: string;
-  debug: (type: DebugType, data: unknown) => void;
+  log: (type: LogType, data: unknown) => void;
 }
 
 type CashInitParam = {
@@ -37,6 +37,7 @@ export class CashIn {
       pin: this.config.pin,
       xAuthToken: this.config.xAuthToken,
       merchantNumber: this.config.merchantNumber,
+      log: config.log,
     });
   }
 
@@ -45,14 +46,14 @@ export class CashIn {
   ): Promise<{ payToken?: string, raw?: Record<string, unknown>; error?: Record<string, unknown> }> {
     const { payToken, status, raw, error } = await this.api.cashIn(param);
     if (!payToken || status === CashInStatus.failed) {
-      this.config.debug(DebugType.error, {
+      this.config.log(LogType.error, {
         message: 'cashIn init failed: payToken not found',
         error,
       });
       return {error, raw};
     }
 
-    this.config.debug(DebugType.info, {
+    this.config.log(LogType.info, {
       message: 'cashIn init succeeded',
       raw,
     });
@@ -62,14 +63,14 @@ export class CashIn {
   async verifyCashIn(payToken: string): Promise<CashInStatus | null> {
     const { raw, status, error } = await this.api.verifyCashIn(payToken);
     if (error || !status) {
-      this.config.debug(DebugType.error, {
+      this.config.log(LogType.error, {
         message: 'cashIn failed',
         error,
       });
       return null;
     }
     if (status == CashInStatus.succeeded) {
-      this.config.debug(DebugType.info, {
+      this.config.log(LogType.info, {
         message: 'cashIn succeeded',
         raw,
       });

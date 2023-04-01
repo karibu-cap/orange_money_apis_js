@@ -1,6 +1,5 @@
-import { isRgbColor } from 'class-validator';
 import { axios, AxiosError } from '../../deps/deps';
-import { CashInStatus, DebugType } from '../../utils/interfaces';
+import { CashInStatus, DebugType, LogType } from '../../utils/interfaces';
 import { encodeDataToXFormUrl, hash } from '../../utils/utls';
 
 export class UssdPinValidationConfig {
@@ -9,6 +8,7 @@ export class UssdPinValidationConfig {
   xAuthToken: string;
   merchantNumber: string;
   pin: string;
+  log: (type: LogType, data: unknown) => void;
 }
 
 type Token = {
@@ -65,7 +65,10 @@ const cashInRespData = {
 };
 
 export class UssdPinValidation {
-  constructor(private config: UssdPinValidationConfig) {}
+  constructor(private config: UssdPinValidationConfig) {
+    this.config.log(LogType.debug, {message: 'init ussd ping validation' , config});
+
+  }
 
   private async generateAccessToken(): Promise<{
     data?: Token;
@@ -79,9 +82,11 @@ export class UssdPinValidation {
     const body = encodeDataToXFormUrl({
       grant_type: 'client_credentials',
     });
+    this.config.log(LogType.debug, {message:"Generating access token", data:{header, body}});
 
     try {
-      const resp = await axios.post('https://api-s1.orange.cm/token', body, {
+      // const resp = await axios.post('https://api-s1.orange.cm/token', body, {
+      const resp = await axios.post('https://api.orange.com/oauth/v3/token', body, {
         headers: header,
       });
       return { data: resp.data as Token };
