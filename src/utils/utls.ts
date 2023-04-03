@@ -1,3 +1,5 @@
+import { AxiosError } from "../deps/deps";
+
 /**
  * Returns the base 64 hash code for the provided data.
  * @param {string} key The login or customer key.
@@ -29,4 +31,36 @@ export function encodeDataToXFormUrl(data: Record<string, string>): string {
     }
   }
   return segments.join('&');
+}
+
+/**
+ * Parse a given axios error.
+ * @param error The error that occurred.
+ * @returns The passed error if error instanceof AxiosError.
+ */
+export function parseAxiosError(error: Record<string, unknown>): Record<string, unknown> {
+  let err = error;
+      if (error instanceof AxiosError) {
+        if (error.response) {
+          err = {
+            responseError: {
+              data: error.response.data,
+              status: error.response.status,
+              statusText: error.response.statusText,
+              headers: error.response.headers,
+            },
+            requestBody: error.request.body,
+            cause: error.cause,
+          };
+        } else if (error.request) {
+          err = {
+            requestFailed: error.request,
+          };
+        } else {
+          err = {
+            configFailed: error.message,
+          };
+        }
+      }
+      return err;
 }

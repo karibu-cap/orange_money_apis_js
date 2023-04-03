@@ -1,14 +1,14 @@
-import { axios, AxiosError } from '../../deps/deps';
+import { axios, AxiosError, AxiosResponse } from '../../deps/deps';
 import { CashInStatus, LogType } from '../../utils/interfaces';
-import { encodeDataToXFormUrl, hash } from '../../utils/utls';
+import { encodeDataToXFormUrl, hash, parseAxiosError } from '../../utils/utls';
 
-export class UssdPinValidationConfig {
+export class OmUssdApiConfig {
   customerSecret: string;
   customerKey: string;
   xAuthToken: string;
   merchantNumber: string;
   pin: string;
-  log: (type: LogType, data: unknown) => void;
+  logger: { debug: (context: string, data?: unknown) => void }; // Allow only debug log for internal api.
 }
 
 type Token = {
@@ -64,16 +64,22 @@ const cashInRespData = {
   },
 };
 
-export class UssdPinValidation {
-  constructor(private config: UssdPinValidationConfig) {
-    this.config.log(LogType.debug, {message: 'init ussd ping validation' , config});
-
+export class OmCashInWithUssdPinConfirmationApi {
+  constructor(private config: OmUssdApiConfig) {
+    this.logger.debug('OmCashInWithUssdPinConfirmationApi.constructor', {
+      message: 'OmCashInWithUssdPinConfirmationApi config set',
+      config,
+    });
+  }
+  private get logger() {
+    return this.config.logger;
   }
 
   private async generateAccessToken(): Promise<{
     data?: Token;
     error?: Record<string, unknown>;
   }> {
+    this.logger.debug('OmCashInWithUssdPinConfirmationApi.generateAccessToken:start');
     const hashValue = hash(this.config.customerKey, this.config.customerSecret);
     const header = {
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -82,15 +88,29 @@ export class UssdPinValidation {
     const body = encodeDataToXFormUrl({
       grant_type: 'client_credentials',
     });
-    this.config.log(LogType.debug, {message:"Generating access token", data:{header, body}});
+    this.logger.debug('OmCashInWithUssdPinConfirmationApi.generateAccessToken', {
+      message: 'Generating access token',
+      header,
+      body,
+    });
 
     try {
-      const resp = await axios.post('https://api-s1.orange.cm/token', body, {
-        headers: header,
+      const resp: AxiosResponse<Token> = await axios.post(
+        'https://api-s1.orange.cm/token',
+        body,
+        {
+          headers: header,
+        }
+      );
+      this.logger.debug('OmCashInWithUssdPinConfirmationApi.generateAccessToken:end', {
+        status: 'success',
       });
-      return { data: resp.data as Token };
+      return { data: resp.data };
     } catch (e) {
-      return { error: Object(e) };
+      this.logger.debug('OmCashInWithUssdPinConfirmationApi.generateAccessToken:end', {
+        status: 'failure',
+      });
+      return { error: parseAxiosError(e) };
     }
   }
 
@@ -98,6 +118,7 @@ export class UssdPinValidation {
     data?: string;
     error?: Record<string, unknown>;
   }> {
+    this.logger.debug('OmCashInWithUssdPinConfirmationApi.cashInInitialization:start');
     const { data, error } = await this.generateAccessToken();
     if (data == null) {
       return { error: { message: 'failed to generate token', raw: error } };
@@ -108,20 +129,35 @@ export class UssdPinValidation {
     };
 
     try {
-      this.config.log(LogType.debug, {message:"Initializing payment(generating pay token)", data:{header}});
+      this.logger.debug('OmCashInWithUssdPinConfirmationApi.cashInInitialization', {
+        message: 'Initializing payment(generating pay token)',
+        header,
+      });
 
-      const resp: CashInInitializationResponse = await axios.post(
-        'https://api-s1.orange.cm/omcoreapis/1.0.2/mp/init',
-        null,
-        {
-          headers: header,
-        }
-      );
+      const resp: AxiosResponse<CashInInitializationResponse, null> =
+        await axios.post(
+          'https://api-s1.orange.cm/omcoreapis/1.0.2/mp/init',
+          null,
+          {
+            headers: header,
+          }
+        );
+      this.logger.debug('OmCashInWithUssdPinConfirmationApi.cashInInitialization:end', {
+        status: 'success',
+      });
       return {
         data: resp.data.data.payToken,
       };
     } catch (error) {
-      return { error: { message: 'Cash in initialization failed', error } };
+      this.logger.debug('OmCashInWithUssdPinConfirmationApi.cashInInitialization:end', {
+        status: 'failure',
+      });
+      return {
+        error: {
+          message: 'Cash in initialization failed',
+          error: parseAxiosError(error),
+        },
+      };
     }
   }
 
@@ -148,6 +184,7 @@ export class UssdPinValidation {
     status?: CashInStatus;
     error?: Record<string, unknown>;
   }> {
+    this.logger.debug('OmCashInWithUssdPinConfirmationApi.cashIn:start');
     const { data: tokenData, error: tokenError } =
       await this.generateAccessToken();
     if (tokenData == null) {
@@ -174,7 +211,11 @@ export class UssdPinValidation {
       payToken: cashInInitializationData,
       pin: this.config.pin,
     };
-    this.config.log(LogType.debug, {message:"Requesting payment", data:{header, body}});
+    this.logger.debug('OmCashInWithUssdPinConfirmationApi.cashIn', {
+      message: 'Requesting payment',
+      header,
+      body,
+    });
     try {
       const resp: typeof cashInRespData = await axios.post(
         'https://api-s1.orange.cm/omcoreapis/1.0.2/mp/pay',
@@ -183,18 +224,28 @@ export class UssdPinValidation {
       );
 
       const rawStatus = resp.data.status;
-      let status:CashInStatus;
-      if (rawStatus == 'PENDING'){
+      let status: CashInStatus;
+      if (rawStatus == 'PENDING') {
         status = CashInStatus.pending;
-      }else if(rawStatus == 'SUCCESSFULL'){
+      } else if (rawStatus == 'SUCCESSFULL') {
         status = CashInStatus.succeeded;
-      }else {
+      } else {
         status = CashInStatus.failed;
       }
-      return { raw: resp.data, status: status, payToken: cashInInitializationData };
-      
+      this.logger.debug('OmCashInWithUssdPinConfirmationApi.cashIn:end', { status: 'success' });
+      return {
+        raw: resp.data,
+        status: status,
+        payToken: cashInInitializationData,
+      };
     } catch (error) {
-      return { error: { message: 'Cash in initialization failed', error } };
+      this.logger.debug('OmCashInWithUssdPinConfirmationApi.cashIn:end', { status: 'failure' });
+      return {
+        error: {
+          message: 'Cash in initialization failed',
+          error: parseAxiosError(error),
+        },
+      };
     }
   }
 
@@ -207,6 +258,7 @@ export class UssdPinValidation {
     status?: CashInStatus;
     error?: Record<string, unknown>;
   }> {
+    this.logger.debug('OmCashInWithUssdPinConfirmationApi.verifyCashIn:start');
     const { data: tokenData, error: tokenError } =
       await this.generateAccessToken();
     if (tokenData == null) {
@@ -215,26 +267,32 @@ export class UssdPinValidation {
       };
     }
     const header = {
-        'X-AUTH-TOKEN': this.config.xAuthToken,
+      'X-AUTH-TOKEN': this.config.xAuthToken,
       Authorization: `Bearer ${tokenData.access_token}`,
     };
 
     try {
-      const resp: typeof cashInRespData = await axios.post(`https://apis1.orange.cm/omcoreapis/1.0.2/mp/paymentstatus/${payToken}`, '', {
-        headers: header,
-      });
+      const resp: typeof cashInRespData = await axios.post(
+        `https://apis1.orange.cm/omcoreapis/1.0.2/mp/paymentstatus/${payToken}`,
+        '',
+        {
+          headers: header,
+        }
+      );
       const rawStatus = resp.data.status;
-      let status:CashInStatus;
-      if (rawStatus == 'PENDING'){
+      let status: CashInStatus;
+      if (rawStatus == 'PENDING') {
         status = CashInStatus.pending;
-      }else if(rawStatus == 'SUCCESSFULL'){
+      } else if (rawStatus == 'SUCCESSFULL') {
         status = CashInStatus.succeeded;
-      }else {
+      } else {
         status = CashInStatus.failed;
       }
+      this.logger.debug('OmCashInWithUssdPinConfirmationApi.verifyCashIn:end', { status: 'success' });
       return { raw: resp.data, status: status };
     } catch (e) {
-      return { error: Object(e) };
+      this.logger.debug('OmCashInWithUssdPinConfirmationApi.verifyCashIn:end', { status: 'failure' });
+      return { error: parseAxiosError(e) };
     }
   }
 }

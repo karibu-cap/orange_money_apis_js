@@ -1,7 +1,7 @@
 export enum LogType {
-  error,
-  info,
-  debug,
+  error = 'error',
+  info = 'info',
+  debug = 'debug',
 }
 
 export enum CashInStatus {

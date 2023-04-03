@@ -1,6 +1,6 @@
 import { classValidator as validator } from '../deps/deps';
 import { CashInStatus, LogType } from '../utils/interfaces';
-import { UssdPinValidation } from './api-implementation/ussd-pin-validation';
+import { OmCashInWithUssdPinConfirmationApi } from './api-implementation/ussd-pin-validation';
 
 export enum ApiType {
   // TODO: implement web code validation when possible.
@@ -17,7 +17,7 @@ export class CashInParameter {
   merchantNumber: string;
   xAuthToken: string;
   customerSecret: string;
-  log: (type: LogType, data: unknown) => void;
+  logger: Record<LogType, (context: string, data: unknown) => void>;
 }
 
 type CashInitParam = {
@@ -29,50 +29,63 @@ type CashInitParam = {
 };
 
 export class CashIn {
-  private api: UssdPinValidation;
+  private api: OmCashInWithUssdPinConfirmationApi;
   constructor(private config: CashInParameter) {
-    this.api = new UssdPinValidation({
+    this.api = new OmCashInWithUssdPinConfirmationApi({
       customerKey: this.config.customerKey,
       customerSecret: this.config.customerSecret,
       pin: this.config.pin,
       xAuthToken: this.config.xAuthToken,
       merchantNumber: this.config.merchantNumber,
-      log: config.log,
+      logger: config.logger,
     });
   }
 
-  async initializeCashIn(
-    param: CashInitParam
-  ): Promise<{ payToken?: string, raw?: Record<string, unknown>; error?: Record<string, unknown> }> {
+  private get logger() {
+    return this.config.logger;
+  }
+
+  async initializeCashIn(param: CashInitParam): Promise<{
+    payToken?: string;
+    raw?: Record<string, unknown>;
+    error?: Record<string, unknown>;
+  }> {
+    this.logger.info('CashIn.initializeCashIn:start', param);
     const { payToken, status, raw, error } = await this.api.cashIn(param);
     if (!payToken || status === CashInStatus.failed) {
-      this.config.log(LogType.error, {
-        message: 'cashIn init failed: payToken not found',
+      this.logger.error('CashIn.initializeCashIn:end', {
+        status: 'failure',
+        raw,
         error,
       });
-      return {error, raw};
+      return { error, raw };
     }
 
-    this.config.log(LogType.info, {
-      message: 'cashIn init succeeded',
-      raw,
-    });
+    this.logger.info('CashIn.initializeCashIn:end', { status: 'success', raw });
     return { payToken, raw };
   }
 
-  async verifyCashIn(payToken: string): Promise<CashInStatus | null> {
+  async verifyCashIn({
+    payToken,
+  }: {
+    payToken: string;
+  }): Promise<CashInStatus | null> {
+    this.logger.info('CashIn.verifyCashIn:start', { payToken });
     const { raw, status, error } = await this.api.verifyCashIn(payToken);
     if (error || !status) {
-      this.config.log(LogType.error, {
-        message: 'cashIn failed',
+      this.logger.error('CashIn.verifyCashIn:end', {
+        status: 'failure',
         error,
+        raw,
+        rawStatus: status,
       });
       return null;
     }
     if (status == CashInStatus.succeeded) {
-      this.config.log(LogType.info, {
-        message: 'cashIn succeeded',
+      this.logger.info('CashIn.verifyCashIn:end', {
+        status: 'complete',
         raw,
+        rawStatus: status,
       });
     }
     return status;
