@@ -28,6 +28,29 @@ type CashInInitializationResponse = {
 /**
  * e.g of cash in response.
  */
+/**
+ * e.g of cash in response.
+ */
+const verificationRespData = {
+  "message": "Transaction retrieved successfully",
+  "data": {
+      "id": 51662559,
+      "createtime": "1672227722",
+      "subscriberMsisdn": null,
+      "amount": null,
+      "payToken": "MPXXXXXXXXXX",
+      "txnid": 'xxxxxxx',
+      "txnmode": 'xxxxxxx',
+      "inittxnmessage": 'xxxxxxx',
+      "inittxnstatus": 'xxxxxxx',
+      "confirmtxnstatus": 'xxxxxxx',
+      "confirmtxnmessage": 'xxxxxxx',
+      "status": "SUCCESSFULL",
+      "notifUrl": 'xxxxxxx',
+      "description": 'xxxxxxx',
+      "channelUserMsisdn": 'xxxxxxx'
+   }
+};
 const cashInRespData = {
   message: 'Merchant payment successfully initiated',
   data: {
@@ -217,13 +240,13 @@ export class OmCashInWithUssdPinConfirmationApi {
       body,
     });
     try {
-      const resp: typeof cashInRespData = await axios.post(
+      const resp: AxiosResponse<typeof cashInRespData> = await axios.post(
         'https://api-s1.orange.cm/omcoreapis/1.0.2/mp/pay',
         body,
         { headers: header }
       );
 
-      const rawStatus = resp.data.status;
+      const rawStatus = resp.data.data.status;
       let status: CashInStatus;
       if (rawStatus == 'PENDING') {
         status = CashInStatus.pending;
@@ -272,14 +295,14 @@ export class OmCashInWithUssdPinConfirmationApi {
     };
 
     try {
-      const resp: typeof cashInRespData = await axios.post(
+      const resp: AxiosResponse<typeof verificationRespData> = await axios.post(
         `https://apis1.orange.cm/omcoreapis/1.0.2/mp/paymentstatus/${payToken}`,
         '',
         {
           headers: header,
         }
       );
-      const rawStatus = resp.data.status;
+      const rawStatus = resp.data.data.status;
       let status: CashInStatus;
       if (rawStatus == 'PENDING') {
         status = CashInStatus.pending;
