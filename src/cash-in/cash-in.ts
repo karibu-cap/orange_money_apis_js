@@ -69,7 +69,7 @@ export class CashIn {
     payToken,
   }: {
     payToken: string;
-  }): Promise<CashInStatus | null> {
+  }): Promise<{ raw?:unknown, status?:CashInStatus, error?: unknown }> {
     this.logger.info('CashIn.verifyCashIn:start', { payToken });
     const { raw, status, error } = await this.api.verifyCashIn(payToken);
     if (error || !status) {
@@ -79,7 +79,7 @@ export class CashIn {
         raw,
         rawStatus: status,
       });
-      return null;
+      return {error};
     }
     if (status == CashInStatus.succeeded) {
       this.logger.info('CashIn.verifyCashIn:end', {
@@ -88,6 +88,6 @@ export class CashIn {
         rawStatus: status,
       });
     }
-    return status;
+    return {status, raw};
   }
 }
