@@ -5,7 +5,7 @@ export enum LogType {
 }
 
 export enum CashInStatus {
-  failed,
-  pending,
-  succeeded,
+  failed = 'failed',
+  pending = 'pending',
+  succeeded = 'succeeded',
 }
