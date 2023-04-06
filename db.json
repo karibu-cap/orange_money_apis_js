@@ -5,50 +5,58 @@
     "token_type": "Bearer",
     "expires_in": 3600
   },
-  "omcoreapis/1.0.2/mp/init": {
-    "message": "Payment request successfully initiated",
-    "data": {
-      "payToken": "thepaytokenid"
-    }
-  },
-  "omcoreapis/1.0.2/mp/pay": {
-    "message": "Merchant payment successfully initiated",
-    "data": {
-      "id": 51696332,
-      "createtime": "1672238140",
-      "subscriberMsisdn": "69xxxxxx",
-      "amount": 1,
-      "payToken": "MP22122828061160596F8A461518",
-      "txnid": "MP221228.1536.A13810",
-      "txnmode": "order1234",
-      "inittxnmessage": "Paiement e la clientele done.The devrez confirmer le paiement en saisissant son code PIN et vous recevrez alors un SMS. Merci dutiliser des services Orange Money.",
-      "inittxnstatus": "200",
-      "confirmtxnstatus": null,
-      "confirmtxnmessage": null,
-      "status": "PENDING",
-      "notifUrl": "https://www.y-note.cm/notification",
-      "description": "Commande 12345",
-      "channelUserMsisdn": "69xxxxxx"
-    }
-  },
-  "omcoreapis/1.0.2/mp/paymentstatus/thepaytokenid": {
-    "message": "Transaction retrieved successfully",
-    "data": {
-      "id": 51662559,
-      "createtime": "1672227722",
-      "subscriberMsisdn": null,
-      "amount": null,
-      "payToken": "MPXXXXXXXXXX",
-      "txnid": "xxxxxxx",
-      "txnmode": "xxxxxxx",
-      "inittxnmessage": "xxxxxxx",
-      "inittxnstatus": "xxxxxxx",
-      "confirmtxnstatus": "xxxxxxx",
-      "confirmtxnmessage": "xxxxxxx",
-      "status": "SUCCESSFULL",
-      "notifUrl": "xxxxxxx",
-      "description": "xxxxxxx",
-      "channelUserMsisdn": "xxxxxxx"
+  "omcoreapis": {
+    "1.0.2": {
+      "mp": {
+        "init": {
+          "message": "Payment request successfully initiated",
+          "data": {
+            "payToken": "thepaytokenid"
+          }
+        },
+        "pay": {
+          "message": "Merchant payment successfully initiated",
+          "data": {
+            "id": 51696332,
+            "createtime": "1672238140",
+            "subscriberMsisdn": "69xxxxxx",
+            "amount": 1,
+            "payToken": "MP22122828061160596F8A461518",
+            "txnid": "MP221228.1536.A13810",
+            "txnmode": "order1234",
+            "inittxnmessage": "Paiement e la clientele done.The devrez confirmer le paiement en saisissant son code PIN et vous recevrez alors un SMS. Merci dutiliser des services Orange Money.",
+            "inittxnstatus": "200",
+            "confirmtxnstatus": null,
+            "confirmtxnmessage": null,
+            "status": "PENDING",
+            "notifUrl": "https://www.y-note.cm/notification",
+            "description": "Commande 12345",
+            "channelUserMsisdn": "69xxxxxx"
+          }
+        },
+        "paymentstatus": {
+          "thepaytokenid": {
+            "message": "Transaction retrieved successfully",
+            "data": {
+              "id": 51662559,
+              "createtime": "1672227722",
+              "subscriberMsisdn": null,
+              "amount": null,
+              "payToken": "MPXXXXXXXXXX",
+              "txnid": "xxxxxxx",
+              "txnmode": "xxxxxxx",
+              "inittxnmessage": "xxxxxxx",
+              "inittxnstatus": "xxxxxxx",
+              "confirmtxnstatus": "xxxxxxx",
+              "confirmtxnmessage": "xxxxxxx",
+              "status": "SUCCESSFULL",
+              "notifUrl": "xxxxxxx",
+              "description": "xxxxxxx",
+              "channelUserMsisdn": "xxxxxxx"
+            }
+          }
+        }
+      }
     }
   }
 }
