@@ -51,7 +51,7 @@ export class CashInParameter {
 
   /**
    * When configured, this host is used instead of the default official documentation domain.
-   * The host can also be a mock server like json placeholder.
+   * The host can also be a mock server like json placeholder. e.g: 
    * Note: we really encourage you to use this method for testing purpose instead of mocking every thing in your implementation.
    */
   @validator.IsUrl()
