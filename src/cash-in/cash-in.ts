@@ -1,4 +1,4 @@
-import { AxiosRequestConfig, classValidator as validator } from '../deps/deps';
+import { classValidator as validator } from '../deps/deps';
 import { CashInStatus, LogType } from '../utils/interfaces';
 import { OmCashInWithUssdPinConfirmationApi } from './api-implementation/ussd-pin-validation';
 
@@ -31,7 +31,7 @@ export class CashInParameter {
   @validator.IsString()
   customerKey: string;
 
-  @validator.IsNumber()
+  @validator.IsNumberString()
   pin: string;
 
   @validator.IsNotEmpty()
