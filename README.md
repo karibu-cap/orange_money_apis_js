@@ -1,3 +1,3 @@
 # Orange Money Apis
 
-A javascript api for OrangeMoney payment.
+A javascript api for OrangeMoney payment
