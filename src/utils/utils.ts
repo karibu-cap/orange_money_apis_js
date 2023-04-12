@@ -1,6 +1,16 @@
 import { AxiosError } from "../deps/deps";
 
 /**
+ * A merchant number regExp authorized by y-note.
+ */
+export const yNoteMerchantNumber = /^(237)?(69\d{7}$|65[5-9]\d{6}$)/
+
+/**
+ * An orange money phone number regex. that do not authorize the country prefix.
+ */
+export const omNumber = /^(69\d{7}$|65[5-9]\d{6}$)/
+
+/**
  * Returns the base 64 hash code for the provided data.
  * @param {string} key The login or customer key.
  * @param {string} secret The password or customer secret.
@@ -8,7 +18,6 @@ import { AxiosError } from "../deps/deps";
  */
 export const hash = (key: string, secret: string): string => {
   const toHash = `${key}:${secret}`;
-  const hash: null | ((string: string) => string) = btoa;
   if (!btoa) {
     return Buffer.from(toHash).toString('base64');
   }
