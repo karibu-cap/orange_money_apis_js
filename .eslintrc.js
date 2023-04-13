@@ -20,6 +20,7 @@ module.exports = {
   },
   ignorePatterns: [
     '**/*.js', // Ignore built files.
+    '**/*.d.ts', // Ignore built files.
     '/coverage/**/*', // Ignore built files.
   ],
   plugins: ['@typescript-eslint', 'import', 'prettier'],

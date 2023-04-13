@@ -45,7 +45,6 @@ jobs:
         run: pnpm lint
 
   unit-test:
-    needs: lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
