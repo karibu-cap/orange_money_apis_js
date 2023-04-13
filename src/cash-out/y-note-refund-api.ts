@@ -11,7 +11,7 @@ import {
   LogType,
   ApiRawStatus,
 } from '../utils/interfaces';
-import { omNumber, parseAxiosError, yNoteMerchantNumber } from '../utils/utils';
+import { getStatusFromProviderRawStatus, omNumber, parseAxiosError, yNoteMerchantNumber } from '../utils/utils';
 
 export class YNoteRefundApiConfig {
   /**
@@ -92,12 +92,14 @@ export type YNoteRefundApi_VerifyRefundResponse =
       raw: Record<string, unknown>;
       refundStep: YNoteRefundStep;
       status: Status;
+      rawStatus: ApiRawStatus;
       error?: undefined;
     }
   | {
       raw?: undefined;
       refundStep?: undefined;
       status?: undefined;
+      rawStatus?: undefined;
       error: unknown;
     };
 
@@ -119,7 +121,7 @@ export class YNoteRefundApi_RefundParam {
    * Note: the contractual commission will be subtracted from the amount you wish to reimburse.
    * e.g: For a reimbursement of 1000 XAF for example, the customer will receive 985 XAF
    */
-  @validator.Min(2)
+  @validator.Min(1)
   @validator.IsNumber({
     allowInfinity: false,
     allowNaN: false,
@@ -305,7 +307,7 @@ export class YNoteRefundApi {
       });
       return {
         error: {
-          message: 'Cash in initialization failed',
+          message: 'Refund initialization failed',
           raw: parseAxiosError(error),
         },
       };
@@ -313,7 +315,7 @@ export class YNoteRefundApi {
   }
 
   /**
-   * Verify the cash in.
+   * Verify the refund.
    * @param {string} messageId The message id returned by refund.
    */
   async verifyRefund(
@@ -360,25 +362,8 @@ export class YNoteRefundApi {
           headers: header,
         });
       const rawStatus = resp.data.result.data.status;
-      let status: Status;
-      switch (rawStatus) {
-        case ApiRawStatus.pending:
-        case ApiRawStatus.initialized:
-          status = Status.pending;
-          break;
-        case ApiRawStatus.succeeded:
-        case ApiRawStatus.succeeded2:
-          status = Status.succeeded;
-          break;
-        case ApiRawStatus.canceled:
-        case ApiRawStatus.expired:
-        case ApiRawStatus.failed:
-          status = Status.failed;
-          break;
-        default:
-          status = Status.unknown;
-          break;
-      }
+      const status = getStatusFromProviderRawStatus(rawStatus);
+      
 
       this.logger.debug(`${loggingID}:end`, {
         status: 'success',
@@ -387,6 +372,7 @@ export class YNoteRefundApi {
         raw: resp.data,
         status: status,
         refundStep: resp.data.RefundStep,
+        rawStatus: rawStatus,
       };
     } catch (e) {
       this.logger.debug(`${loggingID}:end`, {

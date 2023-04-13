@@ -1,14 +1,15 @@
-import { AxiosError } from "../deps/deps";
+import { AxiosError } from '../deps/deps';
+import { ApiRawStatus, Status } from './interfaces';
 
 /**
  * A merchant number regExp authorized by y-note.
  */
-export const yNoteMerchantNumber = /^(237)?(69\d{7}$|65[5-9]\d{6}$)/
+export const yNoteMerchantNumber = /^(237)?(69\d{7}$|65[5-9]\d{6}$)/;
 
 /**
  * An orange money phone number regex. that do not authorize the country prefix.
  */
-export const omNumber = /^(69\d{7}$|65[5-9]\d{6}$)/
+export const omNumber = /^(69\d{7}$|65[5-9]\d{6}$)/;
 
 /**
  * Returns the base 64 hash code for the provided data.
@@ -23,7 +24,6 @@ export const hash = (key: string, secret: string): string => {
   }
   return btoa(toHash);
 };
-
 
 /**
  * Encode the data to w3 x form encoded url.
@@ -47,29 +47,48 @@ export function encodeDataToXFormUrl(data: Record<string, string>): string {
  * @param error The error that occurred.
  * @returns The passed error if error instanceof AxiosError.
  */
-export function parseAxiosError(error: Record<string, unknown>): Record<string, unknown> {
+export function parseAxiosError(
+  error: Record<string, unknown>
+): Record<string, unknown> {
   let err = error;
-      if (error instanceof AxiosError) {
-        if (error.response) {
-          err = {
-            responseError: {
-              data: error.response.data,
-              status: error.response.status,
-              statusText: error.response.statusText,
-              headers: error.response.headers,
-            },
-            requestBody: error.request.body,
-            cause: error.cause,
-          };
-        } else if (error.request) {
-          err = {
-            requestFailed: error.request,
-          };
-        } else {
-          err = {
-            configFailed: error.message,
-          };
-        }
-      }
-      return err;
+  if (error instanceof AxiosError) {
+    if (error.response) {
+      err = {
+        responseError: {
+          data: error.response.data,
+          status: error.response.status,
+          statusText: error.response.statusText,
+          headers: error.response.headers,
+        },
+        requestBody: error.request.body,
+        };
+    } else if (error.request) {
+      err = {
+        requestFailed: error.request,
+      };
+    } else {
+      err = {
+        configFailed: error.message,
+      };
+    }
+  }
+  return err;
+}
+
+export function getStatusFromProviderRawStatus(
+  rawStatus: ApiRawStatus
+): Status {
+  switch (rawStatus) {
+    case ApiRawStatus.pending:
+    case ApiRawStatus.initialized:
+      return Status.pending;
+    case ApiRawStatus.succeeded:
+    case ApiRawStatus.succeeded2:
+      return Status.succeeded;
+    case ApiRawStatus.canceled:
+    case ApiRawStatus.expired:
+    case ApiRawStatus.failed:
+      return Status.failed;
+  }
+  return Status.unknown;
 }

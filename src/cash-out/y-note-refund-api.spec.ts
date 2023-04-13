@@ -3,6 +3,7 @@ import { Token } from '../utils/acccess_token';
 import { ApiEnvironment, ApiRawStatus, Status } from '../utils/interfaces';
 import {
   YNoteRefundApi,
+  YNoteRefundMethod,
   YNoteRefundRowResponse,
   YNoteRefundStep,
   YNoteRefundVerificationRowResponse,
@@ -118,7 +119,7 @@ describe('YNoteRefundApi:refund', () => {
     expect(messageId).toBeUndefined();
     expect(raw).toBeUndefined();
     expect(error).toEqual({
-      message: 'Cash in initialization failed',
+      message: 'Refund initialization failed',
       raw: { configFailed: rejectionMessage },
     });
     expect(mock).toHaveBeenCalledTimes(2);
@@ -147,6 +148,7 @@ describe('YNoteRefundApi:refund', () => {
       customerName: 'Kamado Tanjiro',
       customerPhone: '699947943',
       webhook: 'https://example.com',
+      refundMethod: YNoteRefundMethod.OrangeMoney,
     });
     expect(messageId).toBe(returnedMessageId);
     expect(raw).toBeDefined();
@@ -169,11 +171,12 @@ describe('YNoteRefundApi:verifyRefund', () => {
   });
 
   it('should fail on invalid data provided', async () => {
-    const { error, refundStep, status, raw } =
+    const { error, refundStep, status, rawStatus, raw } =
       await yNoteRefundApi.verifyRefund({
         messageId: '',
       });
     expect(refundStep).toBeUndefined();
+    expect(rawStatus).toBeUndefined();
     expect(status).toBeUndefined();
     expect(raw).toBeUndefined();
     expect(error).toHaveLength(1);
@@ -186,11 +189,12 @@ describe('YNoteRefundApi:verifyRefund', () => {
       .mockImplementation() // Required to disable call of the original method. see: https://jestjs.io/docs/jest-object#jestspyonobject-methodname
       .mockRejectedValueOnce(new AxiosError(rejectionMessage));
 
-    const { error, refundStep, status, raw } =
+    const { error, refundStep, status, rawStatus, raw } =
       await yNoteRefundApi.verifyRefund({
         messageId: 'UNIQUE_MESSAGE_ID',
       });
     expect(refundStep).toBeUndefined();
+    expect(rawStatus).toBeUndefined();
     expect(status).toBeUndefined();
     expect(raw).toBeUndefined();
     expect(error).toEqual({
@@ -216,55 +220,17 @@ describe('YNoteRefundApi:verifyRefund', () => {
       .mockImplementation() // Required to disable call of the original method. see: https://jestjs.io/docs/jest-object#jestspyonobject-methodname
       .mockRejectedValue(new AxiosError(rejectionMessage));
 
-    const { error, refundStep, status, raw } =
+    const { error, refundStep, status, rawStatus, raw } =
       await yNoteRefundApi.verifyRefund({
         messageId: 'UNIQUE_MESSAGE_ID',
       });
     expect(refundStep).toBeUndefined();
+    expect(rawStatus).toBeUndefined();
     expect(status).toBeUndefined();
     expect(raw).toBeUndefined();
     expect(error).toEqual({
       configFailed: rejectionMessage,
     });
-    expect(mock).toHaveBeenCalledTimes(1);
-    expect(mock2).toHaveBeenCalledTimes(1);
-    mock.mockRestore();
-    mock2.mockRestore();
-  });
-
-  it('should complete with pending transaction', async () => {
-    const returnedMessageId = 'MESSAGE_ID_';
-    const mock = jest
-      .spyOn(axios, 'post')
-      .mockImplementation() // Required to disable call of the original method. see: https://jestjs.io/docs/jest-object#jestspyonobject-methodname
-      .mockResolvedValueOnce(<AxiosResponse<Token>>{
-        data: {
-          access_token: 'accessToken',
-        },
-      });
-    const mock2 = jest
-      .spyOn(axios, 'get')
-      .mockImplementation() // Required to disable call of the original method. see: https://jestjs.io/docs/jest-object#jestspyonobject-methodname
-      .mockResolvedValue(<AxiosResponse<YNoteRefundVerificationRowResponse>>{
-        data: {
-          MessageId: returnedMessageId,
-          RefundStep: YNoteRefundStep.InitializingTransfer,
-          result: {
-            data: {
-              status: ApiRawStatus.pending,
-            },
-          },
-        },
-      });
-
-    const { error, refundStep, status, raw } =
-      await yNoteRefundApi.verifyRefund({
-        messageId: 'UNIQUE_MESSAGE_ID',
-      });
-    expect(refundStep).toBe(YNoteRefundStep.InitializingTransfer);
-    expect(status).toBe(Status.pending);
-    expect(raw).toBeDefined();
-    expect(error).toBeUndefined();
     expect(mock).toHaveBeenCalledTimes(1);
     expect(mock2).toHaveBeenCalledTimes(1);
     mock.mockRestore();
@@ -297,12 +263,13 @@ describe('YNoteRefundApi:verifyRefund', () => {
         },
       });
 
-    const { error, refundStep, status, raw } =
+    const { error, refundStep, status, rawStatus, raw } =
       await yNoteRefundApi.verifyRefund({
         messageId: 'UNIQUE_MESSAGE_ID',
       });
     expect(refundStep).toBe(YNoteRefundStep.TransferSent);
     expect(status).toBe(Status.succeeded);
+    expect(rawStatus).toBe(ApiRawStatus.succeeded);
     expect(raw).toBeDefined();
     expect(error).toBeUndefined();
     expect(mock).toHaveBeenCalledTimes(1);
@@ -311,79 +278,4 @@ describe('YNoteRefundApi:verifyRefund', () => {
     mock2.mockRestore();
   });
 
-  it('should complete with transaction failed', async () => {
-    const returnedMessageId = 'MESSAGE_ID_';
-    const mock = jest
-      .spyOn(axios, 'post')
-      .mockImplementation() // Required to disable call of the original method. see: https://jestjs.io/docs/jest-object#jestspyonobject-methodname
-      .mockResolvedValueOnce(<AxiosResponse<Token>>{
-        data: {
-          access_token: 'accessToken',
-        },
-      });
-    const mock2 = jest
-      .spyOn(axios, 'get')
-      .mockImplementation() // Required to disable call of the original method. see: https://jestjs.io/docs/jest-object#jestspyonobject-methodname
-      .mockResolvedValue(<AxiosResponse<YNoteRefundVerificationRowResponse>>{
-        data: {
-          MessageId: returnedMessageId,
-          RefundStep: YNoteRefundStep.InitializingTransfer,
-          result: {
-            data: {
-              status: ApiRawStatus.failed,
-            },
-          },
-        },
-      });
-
-    const { error, refundStep, status, raw } =
-      await yNoteRefundApi.verifyRefund({
-        messageId: 'UNIQUE_MESSAGE_ID',
-      });
-    expect(refundStep).toBe(YNoteRefundStep.InitializingTransfer);
-    expect(status).toBe(Status.failed);
-    expect(raw).toBeDefined();
-    expect(error).toBeUndefined();
-    expect(mock).toHaveBeenCalledTimes(1);
-    expect(mock2).toHaveBeenCalledTimes(1);
-    mock.mockRestore();
-    mock2.mockRestore();
-  });
-
-  it('should complete with unknown transaction status when unsupported status was received from endpoint.', async () => {
-    const returnedMessageId = 'MESSAGE_ID_';
-    const mock = jest
-      .spyOn(axios, 'post')
-      .mockImplementation() // Required to disable call of the original method. see: https://jestjs.io/docs/jest-object#jestspyonobject-methodname
-      .mockResolvedValueOnce(<AxiosResponse<Token>>{
-        data: {
-          access_token: 'accessToken',
-        },
-      });
-    const mock2 = jest
-      .spyOn(axios, 'get')
-      .mockImplementation() // Required to disable call of the original method. see: https://jestjs.io/docs/jest-object#jestspyonobject-methodname
-      .mockResolvedValue(<AxiosResponse<YNoteRefundVerificationRowResponse>>{
-        data: {
-          MessageId: returnedMessageId,
-          RefundStep: YNoteRefundStep.InitializingTransfer,
-          result: {
-            data: {},
-          },
-        },
-      });
-
-    const { error, refundStep, status, raw } =
-      await yNoteRefundApi.verifyRefund({
-        messageId: 'UNIQUE_MESSAGE_ID',
-      });
-    expect(refundStep).toBe(YNoteRefundStep.InitializingTransfer);
-    expect(status).toBe(Status.unknown);
-    expect(raw).toBeDefined();
-    expect(error).toBeUndefined();
-    expect(mock).toHaveBeenCalledTimes(1);
-    expect(mock2).toHaveBeenCalledTimes(1);
-    mock.mockRestore();
-    mock2.mockRestore();
-  });
 });

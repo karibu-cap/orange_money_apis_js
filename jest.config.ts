@@ -6,7 +6,7 @@ import type { Config } from 'jest';
  */
 const jestConfig: Config = {
   // An array of glob patterns indicating a set of files for which coverage information should be collected
-  collectCoverageFrom: ['src/**/*.{js,ts}', '!src/**/*.d.ts'],
+  collectCoverageFrom: ['index.ts', 'src/**/*.{js,ts}', '!src/**/*.d.ts'],
 
   // The directory where Jest should output its coverage files
   coverageDirectory: 'coverage',
@@ -30,19 +30,11 @@ const jestConfig: Config = {
 
   moduleNameMapper: {},
 
-  // A list of paths to modules that run some code to configure or set up the testing framework
-  // before each test file in the suite is executed.
-  setupFilesAfterEnv: ['<rootDir>/jest.before-test.ts'],
-
   // The glob patterns Jest uses to detect test files
   testMatch: ['<rootDir>/**/*.spec.{js,ts}'],
-
-  // A transformer is a module that provides a synchronous function for transforming source files.
-  transform: {
-    '^.+\\.ts$': 'ts-node',
-    // '^.+\\.ts$': 'babel-jest',
-  },
-
+  
+  preset: "ts-jest",
+  
   // Those file will not be transformed
   transformIgnorePatterns: [],
 
