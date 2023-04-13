@@ -11,7 +11,12 @@ import {
   LogType,
   ApiRawStatus,
 } from '../utils/interfaces';
-import { getStatusFromProviderRawStatus, omNumber, parseAxiosError, yNoteMerchantNumber } from '../utils/utils';
+import {
+  getStatusFromProviderRawStatus,
+  omNumber,
+  parseAxiosError,
+  yNoteMerchantNumber,
+} from '../utils/utils';
 
 export class YNoteRefundApiConfig {
   /**
@@ -285,7 +290,7 @@ export class YNoteRefundApi {
       header,
       body,
       endPoint,
-      method: 'post'
+      method: 'post',
     });
     try {
       const resp: AxiosResponse<YNoteRefundRowResponse> = await axios.post(
@@ -354,7 +359,7 @@ export class YNoteRefundApi {
       message: 'Getting refund status...',
       header,
       endPoint,
-      method: 'get'
+      method: 'get',
     });
     try {
       const resp: AxiosResponse<YNoteRefundVerificationRowResponse> =
@@ -363,7 +368,6 @@ export class YNoteRefundApi {
         });
       const rawStatus = resp.data.result.data.status;
       const status = getStatusFromProviderRawStatus(rawStatus);
-      
 
       this.logger.debug(`${loggingID}:end`, {
         status: 'success',

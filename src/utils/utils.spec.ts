@@ -1,5 +1,4 @@
 import { AxiosError, AxiosResponse } from 'axios';
-import { request } from 'http';
 import { ApiRawStatus, Status } from './interfaces';
 import { getStatusFromProviderRawStatus, hash, parseAxiosError } from './utils';
 
@@ -91,14 +90,16 @@ describe('getStatusFromProviderRawStatus', () => {
       test(ApiRawStatus.canceled) === test(ApiRawStatus.failed);
     expect(failureTest).toBe(true);
     const pendingTest =
-      test(ApiRawStatus.pending) === test(ApiRawStatus.initialized)
+      test(ApiRawStatus.pending) === test(ApiRawStatus.initialized);
     expect(pendingTest).toBe(true);
     const successTest =
-      test(ApiRawStatus.succeeded) === test(ApiRawStatus.succeeded2)
+      test(ApiRawStatus.succeeded) === test(ApiRawStatus.succeeded2);
     expect(successTest).toBe(true);
   });
-  
+
   it('should return the unknown on unsupported raw status provided', () => {
-    expect(getStatusFromProviderRawStatus('OTHER_STATUS' as ApiRawStatus)).toBe(Status.unknown);
+    expect(getStatusFromProviderRawStatus('OTHER_STATUS' as ApiRawStatus)).toBe(
+      Status.unknown
+    );
   });
 });

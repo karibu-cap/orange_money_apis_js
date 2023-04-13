@@ -7,7 +7,11 @@ describe('access_token:generateAccessToken', () => {
       endPoint: '',
       key: '',
       secret: '',
-      logger: { debug() {}},
+      logger: {
+        debug(...args) {
+          console.log(args);
+        },
+      },
     });
     expect(result.data).toBeUndefined();
     expect(result.error).toHaveLength(3);
@@ -24,7 +28,11 @@ describe('access_token:generateAccessToken', () => {
       endPoint: 'https://route.com/link',
       key: 'anyKey',
       secret: 'unknown',
-      logger: { debug() {} },
+      logger: {
+        debug(...args) {
+          console.log(args);
+        },
+      },
     });
 
     expect(postSpy).toHaveBeenCalledTimes(1);
@@ -51,7 +59,11 @@ describe('access_token:generateAccessToken', () => {
       endPoint: 'https://route.com/link',
       key: 'anyKey',
       secret: 'unknown',
-      logger: { debug() {} },
+      logger: {
+        debug(...args) {
+          console.log(args);
+        },
+      },
     });
 
     expect(postSpy).toHaveBeenCalledTimes(1);

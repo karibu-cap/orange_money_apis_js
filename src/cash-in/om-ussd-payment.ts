@@ -1,8 +1,16 @@
-import { classTransformer, classValidator as validator } from '../deps/deps';
-import { axios, AxiosResponse } from '../deps/deps';
+import {
+  classTransformer,
+  classValidator as validator,
+  axios,
+  AxiosResponse,
+} from '../deps/deps';
 import { generateAccessToken } from '../utils/acccess_token';
 import { ApiEnvironment, ApiRawStatus, Status } from '../utils/interfaces';
-import { getStatusFromProviderRawStatus, omNumber, parseAxiosError } from '../utils/utils';
+import {
+  getStatusFromProviderRawStatus,
+  omNumber,
+  parseAxiosError,
+} from '../utils/utils';
 
 export class OmUssdPaymentApiConfig {
   @validator.IsNotEmpty()

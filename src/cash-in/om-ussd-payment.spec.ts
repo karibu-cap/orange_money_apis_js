@@ -4,10 +4,6 @@ import { ApiEnvironment, ApiRawStatus, Status } from '../utils/interfaces';
 import {
   ProviderCashInResponse,
   OmUssdPaymentApi,
-  VerifyCashInResponse,
-  InitializeCashInParam,
-  InitializeCashInResponse,
-  OmUssdPaymentApiConfig,
   CashInInitializationResponse,
 } from './om-ussd-payment';
 
@@ -22,7 +18,11 @@ describe('OmUssdPaymentApi:constructor', () => {
         environment: ApiEnvironment.dev,
         pin: '',
         xAuthToken: '',
-        logger: { debug() {} },
+        logger: {
+          debug(...args) {
+            console.log(args);
+          },
+        },
       });
     } catch (err) {
       error = err;
@@ -41,7 +41,11 @@ describe('OmUssdPaymentApi:constructor', () => {
         customerSecret: 'CUSTOMER_SECRET',
         environment: ApiEnvironment.dev,
         pin: '1234',
-        logger: { debug() {} },
+        logger: {
+          debug(...args) {
+            console.log(args);
+          },
+        },
       });
     } catch (err) {
       error = err;
@@ -60,7 +64,11 @@ describe('OmUssdPaymentApi:providerHost', () => {
       customerSecret: 'CUSTOMER_SECRET',
       environment: ApiEnvironment.dev,
       pin: '1234',
-      logger: { debug() {} },
+      logger: {
+        debug(...args) {
+          console.log(args);
+        },
+      },
     });
 
     expect(omUssdPaymentApi.providerHost).toBe(
@@ -73,7 +81,11 @@ describe('OmUssdPaymentApi:providerHost', () => {
       customerSecret: 'CUSTOMER_SECRET',
       environment: ApiEnvironment.prod,
       pin: '1234',
-      logger: { debug() {} },
+      logger: {
+        debug(...args) {
+          console.log(args);
+        },
+      },
     });
 
     expect(omUssdPaymentApi.providerHost).toBe('https://api-s1.orange.cm');
@@ -85,7 +97,11 @@ describe('OmUssdPaymentApi:providerHost', () => {
       environment: ApiEnvironment.prod,
       personalProviderHost: 'https://example.com',
       pin: '1234',
-      logger: { debug() {} },
+      logger: {
+        debug(...args) {
+          console.log(args);
+        },
+      },
     });
 
     expect(omUssdPaymentApi.providerHost).toBe('https://example.com');
@@ -100,7 +116,11 @@ describe('OmUssdPaymentApi:initializeCashIn', () => {
     customerSecret: 'CUSTOMER_SECRET',
     environment: ApiEnvironment.dev,
     pin: '1234',
-    logger: { debug() {} },
+    logger: {
+      debug(...args) {
+        console.log(args);
+      },
+    },
   });
   it('should fail on invalid data provided', async () => {
     const { error, payToken, status, raw } =
@@ -311,7 +331,11 @@ describe('OmUssdPaymentApi:verifyCashIn', () => {
     customerSecret: 'CUSTOMER_SECRET',
     environment: ApiEnvironment.dev,
     pin: '1234',
-    logger: { debug() {} },
+    logger: {
+      debug(...args) {
+        console.log(args);
+      },
+    },
   });
   it('should fail on invalid data provided', async () => {
     const { error, rawStatus, status, raw } =
@@ -384,7 +408,7 @@ describe('OmUssdPaymentApi:verifyCashIn', () => {
       .mockResolvedValue(<AxiosResponse<ProviderCashInResponse>>{
         data: {
           data: {
-              status: ApiRawStatus.succeeded2,
+            status: ApiRawStatus.succeeded2,
           },
         },
       });
@@ -400,5 +424,4 @@ describe('OmUssdPaymentApi:verifyCashIn', () => {
     expect(mock).toHaveBeenCalledTimes(2);
     mock.mockRestore();
   });
-
 });

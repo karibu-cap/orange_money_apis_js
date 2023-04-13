@@ -57,9 +57,12 @@ export async function generateAccessToken(
   param: GenerateAccessTokenParam
 ): Promise<GenerateAccessTokenResponse> {
   const loggingID = 'generateAccessToken';
-  param.logger.debug(`${loggingID}:start`, `started`);
+  param.logger.debug(`${loggingID}:start`, 'started');
 
-  const parsedParam = classTransformer.plainToInstance(GenerateAccessTokenParam, param)
+  const parsedParam = classTransformer.plainToInstance(
+    GenerateAccessTokenParam,
+    param
+  );
   const validationResponse = await validator.validate(parsedParam);
   if (validationResponse.length > 0) {
     parsedParam.logger.debug(`${loggingID}:end`, {

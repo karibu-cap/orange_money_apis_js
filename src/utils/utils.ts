@@ -61,7 +61,7 @@ export function parseAxiosError(
           headers: error.response.headers,
         },
         requestBody: error.request.body,
-        };
+      };
     } else if (error.request) {
       err = {
         requestFailed: error.request,

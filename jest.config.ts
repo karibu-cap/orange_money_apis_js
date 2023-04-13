@@ -32,9 +32,9 @@ const jestConfig: Config = {
 
   // The glob patterns Jest uses to detect test files
   testMatch: ['<rootDir>/**/*.spec.{js,ts}'],
-  
-  preset: "ts-jest",
-  
+
+  preset: 'ts-jest',
+
   // Those file will not be transformed
   transformIgnorePatterns: [],
 

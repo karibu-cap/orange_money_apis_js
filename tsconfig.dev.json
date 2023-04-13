@@ -1,0 +1,5 @@
+{
+    "include": [".eslintrc.js", "jest.config.ts", "index.spec.ts"],
+    "exclude": []
+  }
+  

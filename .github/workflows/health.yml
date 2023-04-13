@@ -42,7 +42,7 @@ jobs:
         run: pnpm install
         
       - name: Test with jest
-        run: pnpm jest --coverage
+        run: pnpm test:coverage
       
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
@@ -83,7 +83,7 @@ jobs:
         run: pnpm install
         
       - name: Test with jest
-        run: pnpm eslint  --max-warnings=0 --ext .js,.ts .
+        run: pnpm lint
 
 
 

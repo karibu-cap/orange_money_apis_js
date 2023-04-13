@@ -13,7 +13,7 @@ describe('YNoteRefundApi:constructor', () => {
   it('should throw on invalid data provided', () => {
     let error;
     try {
-      const yNoteRefundApi = new YNoteRefundApi({
+      new YNoteRefundApi({
         channelUserMsisdn: '',
         clientId: '',
         clientSecret: '',
@@ -21,7 +21,11 @@ describe('YNoteRefundApi:constructor', () => {
         customerSecret: '',
         environment: ApiEnvironment.dev,
         pin: '',
-        logger: { debug() {} },
+        logger: {
+          debug(...args) {
+            console.log(args);
+          },
+        },
       });
     } catch (err) {
       error = err;
@@ -34,7 +38,7 @@ describe('YNoteRefundApi:constructor', () => {
   it('should not throw valid data provided', () => {
     let error;
     try {
-      const yNoteRefundApi = new YNoteRefundApi({
+      new YNoteRefundApi({
         channelUserMsisdn: '698092232',
         clientId: 'clientID',
         clientSecret: 'CLIENT_SECRET',
@@ -42,7 +46,11 @@ describe('YNoteRefundApi:constructor', () => {
         customerSecret: 'CUSTOMER_SECRET',
         environment: ApiEnvironment.dev,
         pin: '1234',
-        logger: { debug() {} },
+        logger: {
+          debug(...args) {
+            console.log(args);
+          },
+        },
       });
     } catch (err) {
       error = err;
@@ -61,7 +69,11 @@ describe('YNoteRefundApi:refund', () => {
     customerSecret: 'CUSTOMER_SECRET',
     environment: ApiEnvironment.dev,
     pin: '1234',
-    logger: { debug() {} },
+    logger: {
+      debug(...args) {
+        console.log(args);
+      },
+    },
   });
   it('should fail on invalid data provided', async () => {
     const { error, messageId, raw } = await yNoteRefundApi.refund({
@@ -167,7 +179,11 @@ describe('YNoteRefundApi:verifyRefund', () => {
     customerSecret: 'CUSTOMER_SECRET',
     environment: ApiEnvironment.dev,
     pin: '1234',
-    logger: { debug() {} },
+    logger: {
+      debug(...args) {
+        console.log(args);
+      },
+    },
   });
 
   it('should fail on invalid data provided', async () => {
@@ -277,5 +293,4 @@ describe('YNoteRefundApi:verifyRefund', () => {
     mock.mockRestore();
     mock2.mockRestore();
   });
-
 });
