@@ -1,0 +1,29 @@
+version: 0.0.1
+dbFile: .mockapi.db.json
+dbDataPath: /
+apiRoutePrefix: /
+routes:
+  get:
+  post:
+    - path: /token
+    - path: /omcoreapis/1.0.2/mp/init
+    - path: /omcoreapis/1.0.2/mp/pay
+      restrictedBody: true
+      bodyFields:
+        subscriberMsisdn: true
+        notifUrl: true
+        orderId: true
+        description: true
+        amount: true
+        channelUserMsisdn: true
+        payToken: true
+        pin: true
+      scheduleNotification:
+        followProp: notifUrl
+        timeoutInSecond: 120
+        notificationMethod: POST
+        postDataPath: /omcoreapis/1.0.2/mp/paymentstatus/MP22122828061160596F8A461518
+    - path: /omcoreapis/1.0.2/mp/paymentstatus/:payToken
+
+
+

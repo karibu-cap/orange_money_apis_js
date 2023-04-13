@@ -1,0 +1,62 @@
+{
+  "token": {
+    "access_token": "0994b463-123e-3565-981e-ae4e2e44475d",
+    "scope": "am_application_scope default",
+    "token_type": "Bearer",
+    "expires_in": 300
+  },
+  "omcoreapis": {
+    "1.0.2": {
+      "mp": {
+        "init": {
+          "message": "Payment request successfully initiated",
+          "data": {
+            "payToken": "MP22122828061160596F8A461518"
+          }
+        },
+        "pay": {
+          "message": "Merchant payment successfully initiated",
+          "data": {
+            "id": 51696332,
+            "createtime": "1672238140",
+            "subscriberMsisdn": "69xxxxxx",
+            "amount": 1,
+            "payToken": "MP22122828061160596F8A461518",
+            "txnid": "MP221228.1536.A13810",
+            "txnmode": "order1234",
+            "inittxnmessage": "Paiement e la clientele done.The devrez confirmer le paiement en saisissant son code PIN et vous recevrez alors un SMS. Merci dutiliser des services Orange Money.",
+            "inittxnstatus": "200",
+            "confirmtxnstatus": null,
+            "confirmtxnmessage": null,
+            "status": "PENDING",
+            "notifUrl": "xxxxx",
+            "description": "Commande 12345",
+            "channelUserMsisdn": "69xxxxxx"
+          }
+        },
+        "paymentstatus": {
+          "MP22122828061160596F8A461518": {
+            "message": "Merchant payment successfully initiated",
+            "data": {
+              "id": 51696332,
+              "createtime": "1672238140",
+              "subscriberMsisdn": "69xxxxxx",
+              "amount": 1,
+              "payToken": "MP22122828061160596F8A461518",
+              "txnid": "MP221228.1536.A13810",
+              "txnmode": "order1234",
+              "inittxnmessage": "Paiement e la clientele done.The devrez confirmer le paiement en saisissant son code PIN et vous recevrez alors un SMS. Merci dutiliser des services Orange Money.",
+              "inittxnstatus": "200",
+              "confirmtxnstatus": null,
+              "confirmtxnmessage": null,
+              "status": "SUCCESSFULL",
+              "notifUrl": "xxxxx",
+              "description": "Commande 12345",
+              "channelUserMsisdn": "69xxxxxx"
+            }
+          }
+        }
+      }
+    }
+  }
+}
