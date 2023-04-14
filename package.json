@@ -1,6 +1,6 @@
 {
   "name": "orange_money_apis",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Javascript api for orange money payment",
   "main": "index",
   "scripts": {
