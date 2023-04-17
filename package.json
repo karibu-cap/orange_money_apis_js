@@ -7,6 +7,7 @@
     "test": "jest",
     "test:coverage": "jest --coverage",
     "lint": "eslint  --max-warnings=0 --ext .js,.ts .",
+    "clear:build": "rm -f src/**/*.js* src/**/*.d.ts index.js* index.d* tsconfig.tsbuildinfo",
     "postinstall": "tsc"
   },
   "keywords": [],
@@ -25,6 +26,7 @@
     "eslint-plugin-vue": "^9.9.0",
     "jest": "^29.5.0",
     "prettier": "^2.8.4",
+    "rimraf": "^5.0.0",
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1"
   },
