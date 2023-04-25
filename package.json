@@ -7,7 +7,7 @@
     "test": "jest",
     "test:coverage": "jest --coverage",
     "lint": "eslint  --max-warnings=0 --ext .js,.ts .",
-    "clear:build": "rm -f src/**/*.js* src/**/*.d.ts index.js* index.d* tsconfig.tsbuildinfo",
+    "clear:build": "rimraf src/**/*.js* src/**/*.d.ts index.js* index.d* tsconfig.tsbuildinfo",
     "postinstall": "tsc"
   },
   "keywords": [],
