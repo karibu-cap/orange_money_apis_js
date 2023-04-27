@@ -64,7 +64,10 @@ export function parseAxiosError(
       };
     } else if (error.request) {
       err = {
-        requestFailed: error.request,
+        requestFailed: {
+          data: error.config.data,
+          headers: error.config.headers,
+        }
       };
     } else {
       err = {
