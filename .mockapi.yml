@@ -4,7 +4,6 @@ dbDataPath: /
 apiRoutePrefix: /
 routes:
   get:
-    - /token
   post:
     - path: /token
     - path: /omcoreapis/1.0.2/mp/init
