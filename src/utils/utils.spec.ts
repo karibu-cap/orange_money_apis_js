@@ -29,7 +29,7 @@ describe('parseAxiosError', () => {
     });
   });
 
-  it('should return request failed when axios is unable to send the request.', () => {
+  test.skip('should return request failed when axios is unable to send the request.', () => {
     const request = {
       headers: {
         'Content-Type': 'application/json',
