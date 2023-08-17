@@ -71,13 +71,13 @@ describe('parseAxiosError', () => {
       ) as unknown as Record<string, unknown>
     );
     expect(parsedResponse).toEqual({
-      responseError: {
-        data: response.data,
-        status: response.status,
-        statusText: response.statusText,
-        headers: response.headers,
-      },
-      requestBody: request.body,
+      responseData: response.data,
+      responseStatus: response.status,
+      responseStatusText: response.statusText,
+      responseHeaders: response.headers,
+      requestData: undefined,
+      requestHeaders: undefined,
+      requestUrl: undefined,
     });
   });
 });
