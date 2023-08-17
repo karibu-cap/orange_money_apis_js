@@ -309,7 +309,7 @@ export class OmUssdPaymentApi {
       notifUrl: parsedParam.notificationUrl,
       orderId: parsedParam.referenceId,
       description: parsedParam.comment,
-      amount: parsedParam.amount,
+      amount: `${parsedParam.amount}`,
       channelUserMsisdn: this.config.merchantNumber,
       payToken: cashInInitializationData,
       pin: this.config.pin,
