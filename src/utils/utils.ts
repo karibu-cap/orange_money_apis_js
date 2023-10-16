@@ -59,6 +59,7 @@ export function parseAxiosError(
         responseStatusText: error.response?.statusText,
         responseHeaders: error.response?.headers,
         requestUrl: error.config?.url,
+        requestMethod: error.config?.method,
         requestData: error.config?.data,
         requestHeaders: error.config?.headers,
       };
@@ -67,6 +68,7 @@ export function parseAxiosError(
         requestFailed: {
           data: error.config?.data,
           headers: error.config?.headers,
+          method: error.config?.method,
         },
       };
     } else {
