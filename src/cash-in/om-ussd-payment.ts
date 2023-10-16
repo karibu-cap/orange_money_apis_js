@@ -387,9 +387,9 @@ export class OmUssdPaymentApi {
     };
 
     try {
-      const resp: AxiosResponse<ProviderCashInResponse> = await axios.post(
+      const resp: AxiosResponse<ProviderCashInResponse> = await axios.get(
         `${this.providerHost}/omcoreapis/1.0.2/mp/paymentstatus/${parsedParam.payToken}`,
-        '',
+        null,
         {
           headers: header,
         }
