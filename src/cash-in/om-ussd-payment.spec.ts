@@ -379,7 +379,10 @@ describe('OmUssdPaymentApi:verifyCashIn', () => {
         data: {
           access_token: 'accessToken',
         },
-      })
+      });
+    const mock2 = jest
+      .spyOn(axios, 'get')
+      .mockImplementation()
       .mockRejectedValue(new AxiosError(rejectionMessage));
 
     const { error, rawStatus, status, raw } =
@@ -392,8 +395,10 @@ describe('OmUssdPaymentApi:verifyCashIn', () => {
     expect(error).toEqual({
       configFailed: rejectionMessage,
     });
-    expect(mock).toHaveBeenCalledTimes(2);
+    expect(mock).toHaveBeenCalledTimes(1);
+    expect(mock2).toHaveBeenCalledTimes(1);
     mock.mockRestore();
+    mock2.mockRestore();
   });
 
   it('should complete with succeeded transaction', async () => {
@@ -404,7 +409,10 @@ describe('OmUssdPaymentApi:verifyCashIn', () => {
         data: {
           access_token: 'accessToken',
         },
-      })
+      });
+    const mock2 = jest
+      .spyOn(axios, 'get')
+      .mockImplementation()
       .mockResolvedValue(<AxiosResponse<ProviderCashInResponse>>{
         data: {
           data: {
@@ -421,7 +429,9 @@ describe('OmUssdPaymentApi:verifyCashIn', () => {
     expect(rawStatus).toBe(ApiRawStatus.succeeded2);
     expect(raw).toBeDefined();
     expect(error).toBeUndefined();
-    expect(mock).toHaveBeenCalledTimes(2);
+    expect(mock).toHaveBeenCalledTimes(1);
+    expect(mock2).toHaveBeenCalledTimes(1);
     mock.mockRestore();
+    mock2.mockRestore();
   });
 });
